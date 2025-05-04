@@ -1,5 +1,7 @@
 # 🚀 Desafio Técnico - Gaudium
 
+O desafio consiste em aplicar modelagem dimensional a partir de uma tabela consolidada com informações brutas, utilizando a abordagem de fato e dimensões.
+
 ## 📁 Estrutura dos dados
 
 Arquivo de entrada: `Dados brutos.csv`
@@ -15,17 +17,17 @@ Arquivo de entrada: `Dados brutos.csv`
 | qtd_vendida  | int  |
 | valor_total  | int  |
 
-A configuração ``inferSchema=True`` do método de leitura de arquivo PySpark foi capaz de capturar o schema de forma correta
+Durante a leitura do arquivo no PySpark, a opção `inferSchema=True` foi utilizada, permitindo a identificação automática e correta dos tipos de dados.
 
 ## 📋 Identificação de entidades e fatos
 
-A partir de uma análise inicial, foi possível identificar as dimensões/contexto de clientes, produtos e data e os fatos, relacionados as medidas de quantidade vendida e valor total
+A partir de uma análise inicial, foram identificadas três principais dimensões: **clientes**, **produtos** e **datas**. Os fatos estão associados às medidas de quantidade vendida e valor total.
 
-As tabelas de dimensões criadas foram:
+### Tabelas de Dimensão: 
 
-### Cliente
+#### Cliente
 
-A tabela de cliente utiliza o nome, cidade e estado para identificar um cliente único e o id gerado para essa tabela é um hash obtido através da combinação desses três valores
+A dimensão de clientes é composta por nome, cidade e estado. A identificação única de cada cliente foi gerada por meio de um hash da combinação desses três campos.
 
 | Coluna       | Tipo |
 |--------------|------|
@@ -34,20 +36,20 @@ A tabela de cliente utiliza o nome, cidade e estado para identificar um cliente 
 | cidade       | str  |
 | estado       | str  |
 
-### Produtos
+#### Produtos
 
-A tabela de produtos utiliza o nome e fabricante para identificar um produto único e o id gerado para essa tabela é um hash obtido através da combinação desses dois valores
+A dimensão de produtos utiliza o nome do produto e o fabricante como identificadores únicos, também com o ID sendo um hash da combinação desses campos.
 
 | Coluna       | Tipo |
 |--------------|------|
-| id_produtos   | int  |
+| id_produto   | int  |
 | nome_produto | str  |
 | categoria       | str  |
 | fabricante       | str  |
 
-### Datas
+#### Datas
 
-A tabela de dias é gerado referenciando a data da primeira compra registrada e a data da última compra registrada como bases para gerar o intervalo completo de dias nesse intervalo. Além disso, a tabela de datas contém informações como o dia, mês, ano e dia da semana para possível utilização por parte da equipe de análise ou da equipe de ciência de dados
+A dimensão de datas foi construída com base no intervalo entre a primeira e a última data de compra registrada. Ela inclui colunas adicionais úteis para análises temporais.
 
 | Coluna       | Tipo |
 |--------------|------|
@@ -57,10 +59,11 @@ A tabela de dias é gerado referenciando a data da primeira compra registrada e 
 |    ano    | int  |
 |    dia_da_semana    | int  |
 
-### Vendas fato
+### A tabela fato criada:
 
-A tabela de vendas fato é a tabela central, no qual o contexto dessas dimensões são aplicadas. 
-A granularidade dela é por cliente, dia e produto e contém as informações de quantidade vendida e total. Ela foi gerada usando o arquivo bruto como base.
+#### Vendas fato
+
+A tabela fato de vendas centraliza os dados relacionando as três dimensões com as métricas de interesse. A granularidade adotada é por cliente, produto e data.
 
 | Coluna       | Tipo |
 |--------------|------|
@@ -70,53 +73,67 @@ A granularidade dela é por cliente, dia e produto e contém as informações de
 |    qtde_vendida    | int  |
 |    valor_total    | int  |
 
-## 🏗 Diagrama do modelo e das etapas de transformação dos dados
+## 🏭 Diagrama do modelo e processo
 
-O diagrama é uma representação simplificada de como os dados estão sendo transformados. Ela não segue uma estrutura usual de diagramação de ETL, visto que o intuito é simplismente ilustrar de forma clara o processo específico para o desenvolvimento desse projeto particular.
+O diagrama abaixo representa de forma simplificada o fluxo de transformação dos dados neste projeto. Ele não segue uma estrutura formal de diagramação de processos ETL, pois o objetivo é apenas ilustrar, de maneira clara e objetiva, as etapas específicas adotadas neste caso.
 
 ![image](imgs/diagram.jpg)
 
-## ▶️ Como executar o código
+## ▶️ Como executar
 
-Código principal
+### Código principal
+Passos:
 
-Pré-requisito para executar o código
-- Suba os arquivos main.py e config.toml para um ambiente com suporte ao pyspark
-- Suba o arquivo .csv. Por padrão o script espera que o arquivo esteja em um diretório data/raw/ no mesmo local que o main, porém, isso pode ser alterado no arquivo de configuração (config.toml)
-- Execute o código main.py
-- Os arquivos serão gerados dentro do diretórios determinados pelo arquivo de configuração (por padrão, data/processed/)
+- Certifique-se de ter um ambiente com suporte ao PySpark.
+- Coloque os arquivos `main.py` e config.toml no ambiente.
+- Faça o upload do arquivo `.csv`. Por padrão, o script espera que o arquivo esteja no diretório `data/raw/`, localizado no mesmo nível do main.py. Esse caminho pode ser alterado no arquivo de configuração (`config.toml`).
+- Execute o arquivo `main.py`.
+
+Os arquivos de saída serão gerados nos diretórios especificados no config.toml (por padrão, em `data/processed/`).
 
 ---
-Código notebook
 
-Versão utilizada para testagem individual de cada base de dados e pode ser utilizado para investigar cada processo individualemente
+### Código notebook (`notebooks/modelagem.ipynb`)
 
-- Suba o notebook e o arquivo .csv em um ambiente com suporte ao pyspark
+Essa versão foi utilizada para testar individualmente cada base de dados e pode ser útil para investigar etapas específicas do processo de transformação.
+
+- Suba o notebook e o arquivo `.csv` em um ambiente com suporte ao pyspark
+- Execute as células sequencialmente
+
+Observação:
+
+Os caminhos dos arquivos estão escritos conforme a estrutura do repositório. Para maior flexibilidade, esses caminhos podem ser modificados conforme necessário
 
 ## 🛠 Tecnologias utilizadas
 
 - PySpark
 - Spark SQL
-- Microsoft Fabric (simulado via notebooks)
+- Databricks ou outra plataforma equivalente (Simulado via notebooks para facilitar a análise e testagem dos dados)
 - Git e GitHub
-- Figma (Para geração dos diagramas)
+- Figma (Utilizado na criação dos diagramas que ilustram o modelo dimensional e o fluxo de transformação dos dados.)
 
 ## 📂 Arquivos no repositório
 
 A estrutura de arquivos do repositório
 
+- `imgs/*.jpg`
+    - Imagens utilizadas no `README.md`
 - `notebooks/modelagem.ipynb`
-    - Notebook que pode ser utilizado para gerar os dados, porém, mais recomendado para testar funções e transformações específicas para algum dos arquivos
+    - Notebook utilizado para gerar os dados individualmente. Recomendado principalmente para testar funções e transformações específicas em uma das tabelas
+- `notebooks/testing.ipynb`
+    - Notebook utilizado para realizar alguns testes de integridade dos dados gerados
 - `main.py`
-    - Script principal
+    - Script principal responsável pela orquestração da geração das tabelas a partir dos dados brutos.
 - `config.toml`
-    - Arquivo de configuração para execução do script `main.py`
-    - A partir desse arquivo, pode ser alterado o caminho dos arquivos de entrada e saída de cada tabela, quais arquivos devem ser consolidados e também quais colunas serão utilizadas como identificadores únicos
+    - Arquivo de configuração do script `main.py`. Nele é possível:
+        1. Alterar os caminhos de entrada e saída dos arquivos;
+        2. Definir quais arquivos devem ser consolidados;
+        3. Escolher quais colunas devem ser usadas como identificadores únicos.
 - `requirements_dev.txt`
-    - Arquivo com os pacotes utilizados e suas versões
+    - Lista de pacotes e suas versões utilizados no desenvolvimento do projeto
 
-#### Arquivos gerados
-Os arquivos de saída foram geradas de forma a simular um processo de ETL.
+### Arquivos gerados
+Os arquivos de saída foram organizados para simular um processo de ETL. A estrutura segue o seguinte formato:
 
 ```
 data
@@ -137,8 +154,10 @@ data
     └─── Dados brutos.csv
 ```
 
-Observação:
-- São gerados dois arquivos para cada grupo de dados, uma versão que sempre será a mais recente e outra contendo a informação da data de geração, que pode ser utilizado para versionamento.
- 
-
 ## ✅ Observações
+
+- Para cada grupo de dados, são gerados dois arquivos:
+    - Uma versão com o nome fixo (ex: `clientes.csv`), que representa sempre a versão mais recente;
+    - Uma versão com a data de geração no nome (ex: `clientes_YYYYmmmdd.csv`), que pode ser utilizada para controle de versionamento.
+- O código não realiza leitura de tabelas previamente criadas. Isso significa que, ao adicionar um novo arquivo com dados, os arquivos de dimensões e fato serão gerados apenas com base nesse novo arquivo, sem incorporar informações de execuções anteriores.
+- A utilização de hash para criação das chaves nas tabelas de dimensões foi adotada com o objetivo de facilitar uma futura implementação mais robusta, em que o histórico e o controle de versionamento de dimensões possam ser mantidos com consistência.
