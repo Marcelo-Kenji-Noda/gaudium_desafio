@@ -1,0 +1,22 @@
+input_dir = "data/raw"
+input_file = "Dados brutos.csv"
+output_dir = "data/processed"
+
+[vendas_fato]
+consolidate=true
+output_filepath='vendas_fato'
+
+[clientes]
+consolidate=true
+output_filepath = 'clientes'
+unique_identifiers_cols = ["nome_cliente","cidade","estado"]
+
+[produtos]
+consolidate=true
+output_filepath = 'produtos'
+unique_identifiers_cols = ["nome_produto","categoria","fabricante"]
+
+[datas]
+consolidate=true
+output_filepath = 'datas'
+unique_identifiers_cols = []
